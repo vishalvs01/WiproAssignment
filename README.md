@@ -7,4 +7,4 @@ Web Api library used- Retrofit
 
 Other notable library used- RXjava, Picasso, SDP
 
-and databinding enabled
+and used databinding to bind data to UI elements
