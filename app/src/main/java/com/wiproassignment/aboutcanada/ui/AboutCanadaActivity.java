@@ -1,4 +1,4 @@
-package com.wiproassignment.aboutcanada;
+package com.wiproassignment.aboutcanada.ui;
 
 import android.os.Bundle;
 import android.os.PersistableBundle;

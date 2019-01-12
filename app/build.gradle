@@ -42,12 +42,14 @@ dependencies {
     //Library for constraint layout
     implementation "com.android.support.constraint:constraint-layout:$constraintLayoutVersion"
 
-    //Library for viewmodel and livedata
-    implementation "android.arch.lifecycle:extensions:$lifecycleVersion"
+    //Library for rxjava
+    implementation "io.reactivex.rxjava2:rxjava:$rxVersion"
+    implementation "io.reactivex.rxjava2:rxandroid:$rxVersion"
 
     //Library for web api integration and response parsing
     implementation "com.squareup.retrofit2:retrofit:$retrofitVersion"
     implementation "com.squareup.retrofit2:converter-gson:$retrofitVersion"
+    implementation "com.jakewharton.retrofit:retrofit2-rxjava2-adapter:$retrofitRxAdapter"
     implementation "com.squareup.okhttp3:okhttp:$okHttpVersion"
 
     //Library for image loading

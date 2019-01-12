@@ -30,6 +30,8 @@ ext {
     okHttpVersion = '3.12.1'
     picassoVersion='2.71828'
     sdpVersion='1.0.6'
+    rxVersion='2.0.1'
+    retrofitRxAdapter="1.0.0"
 }
 
 task clean(type: Delete) {
