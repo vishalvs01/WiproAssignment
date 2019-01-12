@@ -26,7 +26,8 @@ public class AboutCanadaPresenter extends BasePresenter<AboutCanadaViewPresenter
             @Override
             public void onNext(CanadaInfo value) {
                 view.stopLoading();
-
+                view.setListData(value.getRows());
+                view.setToolBarTitle(value.getTitle());
             }
 
             @Override

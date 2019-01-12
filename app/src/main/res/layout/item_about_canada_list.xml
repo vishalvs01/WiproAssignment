@@ -3,6 +3,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <data>
+
+        <variable
+            name="info"
+            type="com.wiproassignment.aboutcanada.data.Info" />
+
+    </data>
+
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -13,6 +21,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:paddingBottom="@dimen/_10sdp"
+            android:text="@{info.title}"
             android:textColor="@color/textColorTitle"
             android:textSize="@dimen/_15sdp"
             tools:text="Murdochs need counselling after hacking scandal" />
@@ -21,6 +30,7 @@
             android:id="@+id/ivImage"
             android:layout_width="@dimen/_90sdp"
             android:layout_height="@dimen/_60sdp"
+            android:infoImage="@{info.imageHref}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvTitle" />
 
@@ -28,12 +38,13 @@
             android:id="@+id/tvDescription"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="The british phone The british phone The british phone The british phone"
+            android:text="@{info.description}"
             android:textColor="@android:color/black"
             android:textSize="@dimen/_10sdp"
             app:layout_constraintEnd_toStartOf="@id/ivImage"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvTitle" />
+            app:layout_constraintTop_toBottomOf="@+id/tvTitle"
+            tools:text="The british phone The british phone The british phone The british phone" />
 
     </android.support.constraint.ConstraintLayout>
 

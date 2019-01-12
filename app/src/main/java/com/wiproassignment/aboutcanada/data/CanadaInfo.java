@@ -12,4 +12,11 @@ public class CanadaInfo {
     @SerializedName("rows")
     private ArrayList<Info> rows;
 
+    public String getTitle() {
+        return title;
+    }
+
+    public ArrayList<Info> getRows() {
+        return rows;
+    }
 }
