@@ -32,6 +32,40 @@ public class AboutCanadaPresenter extends BasePresenter<AboutCanadaViewPresenter
 
             @Override
             public void onError(Throwable e) {
+                clearCompositeDisposable();
+
+                view.stopLoading();
+
+                if (e instanceof NoInternetException)
+                    view.showInternetError();
+                else
+                    view.showError();
+            }
+
+            @Override
+            public void onComplete() {
+                clearCompositeDisposable();
+            }
+        }));
+
+    }
+
+    @Override
+    public void reloadData() {
+
+        if (compositeDisposable.size() != 0)
+            return;
+
+        compositeDisposable.add(model.getDataObservable().subscribeWith(new DisposableObserver<CanadaInfo>() {
+
+            @Override
+            public void onNext(CanadaInfo value) {
+                view.setListData(value.getRows());
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                clearCompositeDisposable();
                 view.stopLoading();
 
                 if (e instanceof NoInternetException)

@@ -7,6 +7,8 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
@@ -38,13 +40,8 @@ public class AboutCanadaActivity extends AppCompatActivity implements AboutCanad
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_about_canada);
 
-        Toolbar toolbar=findViewById(R.id.mainToolbar);
-        setSupportActionBar(toolbar);
-
-        DividerItemDecoration dividerItemDecoration=new DividerItemDecoration(this,DividerItemDecoration.VERTICAL);
-        dividerItemDecoration.setDrawable(ContextCompat.getDrawable(this,R.drawable.bg_recycler_divider));
-        binding.rvCanadaList.addItemDecoration(dividerItemDecoration);
-        binding.rvCanadaList.setAdapter(adapter = new AboutCanadaAdapter());
+        setupToolbar();
+        setUpRecyclerView();
 
         presenter.loadData();
 
@@ -53,6 +50,22 @@ public class AboutCanadaActivity extends AppCompatActivity implements AboutCanad
     public void setUpMvp() {
         DaggerAboutCanadaComponent.builder().applicationComponent(App.getApplicationComponent())
                 .aboutCanadaModule(new AboutCanadaModule(this)).build().inject(this);
+
+    }
+
+    public void setupToolbar() {
+
+        Toolbar toolbar = findViewById(R.id.mainToolbar);
+        setSupportActionBar(toolbar);
+
+    }
+
+    public void setUpRecyclerView() {
+
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
+        dividerItemDecoration.setDrawable(ContextCompat.getDrawable(this, R.drawable.bg_recycler_divider));
+        binding.rvCanadaList.addItemDecoration(dividerItemDecoration);
+        binding.rvCanadaList.setAdapter(adapter = new AboutCanadaAdapter());
 
     }
 
@@ -85,5 +98,32 @@ public class AboutCanadaActivity extends AppCompatActivity implements AboutCanad
     @Override
     public void stopLoading() {
         binding.tvLoadingData.setVisibility(View.GONE);
+    }
+
+    @Override
+    protected void onStop() {
+        presenter.clearCompositeDisposable();
+        super.onStop();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+            case R.id.view_reload:
+
+                presenter.reloadData();
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+
     }
 }

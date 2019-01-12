@@ -17,6 +17,8 @@ public interface AboutCanadaViewPresenterContract {
 
     interface Presenter extends BaseViewPresenterContract.Presenter {
         void loadData();
+
+        void reloadData();
     }
 
 }
