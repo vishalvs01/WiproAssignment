@@ -14,7 +14,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <activity android:name=".aboutcanada.ui.AboutCanadaActivity">
+        <activity android:name=".aboutcanada.mvp.AboutCanadaActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
