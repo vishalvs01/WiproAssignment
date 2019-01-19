@@ -7,6 +7,7 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.Toolbar;
@@ -15,8 +16,8 @@ import android.widget.Toast;
 import com.wiproassignment.R;
 import com.wiproassignment.aboutcanada.adapter.AboutCanadaAdapter;
 import com.wiproassignment.aboutcanada.di.DaggerAboutCanadaComponent;
-import com.wiproassignment.common.db.dao.App;
 import com.wiproassignment.common.ViewModelFactory;
+import com.wiproassignment.common.db.dao.App;
 import com.wiproassignment.common.db.entity.InfoEntity;
 import com.wiproassignment.databinding.ActivityAboutCanadaBinding;
 import com.wiproassignment.utils.ConstantUtils;
@@ -52,6 +53,25 @@ public class AboutCanadaActivity extends AppCompatActivity {
 
         observeData();
 
+        setSwipeToRefresh();
+
+    }
+
+    private void setSwipeToRefresh() {
+
+        binding.srLayout.setColorSchemeColors(ContextCompat.getColor(this, R.color.colorPrimary),
+                ContextCompat.getColor(this, R.color.colorAccent),
+                ContextCompat.getColor(this, R.color.colorPrimaryDark));
+
+        binding.srLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+
+                viewModel.getUpdatedInfoList();
+
+            }
+        });
+
     }
 
     private void observeData() {
@@ -59,6 +79,7 @@ public class AboutCanadaActivity extends AppCompatActivity {
         viewModel.getInfoList().observe(this, new Observer<List<InfoEntity>>() {
             @Override
             public void onChanged(@Nullable List<InfoEntity> infoEntities) {
+                binding.srLayout.setRefreshing(false);
                 setListData(infoEntities);
                 setToolBarTitle(sharedPreferences.getString(ConstantUtils.TITLE, ""));
             }
@@ -68,6 +89,7 @@ public class AboutCanadaActivity extends AppCompatActivity {
         viewModel.getErrorMessage().observe(this, new Observer<String>() {
             @Override
             public void onChanged(@Nullable String error) {
+                binding.srLayout.setRefreshing(false);
                 showError(error);
             }
         });
@@ -116,25 +138,4 @@ public class AboutCanadaActivity extends AppCompatActivity {
 
     }
 
-  /*  @Override
-
-    @Override
-    public void showError() {
-        Toast.makeText(this, getResources().getString(R.string.error_occurred), Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void showInternetError() {
-        Toast.makeText(this, getResources().getString(R.string.no_internet_found), Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void showLoading() {
-        binding.tvLoadingData.setVisibility(View.VISIBLE);
-    }
-
-    @Override
-    public void stopLoading() {
-        binding.tvLoadingData.setVisibility(View.GONE);
-    }*/
 }

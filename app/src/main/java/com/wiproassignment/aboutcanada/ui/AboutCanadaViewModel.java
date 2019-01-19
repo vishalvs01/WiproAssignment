@@ -28,6 +28,13 @@ public class AboutCanadaViewModel extends ViewModel {
 
     }
 
+    //live data for updated info list
+    public void getUpdatedInfoList() {
+
+        repository.getUpdatedInfoData();
+
+    }
+
     //live data for error state
     public LiveData<String> getErrorMessage() {
 
@@ -41,6 +48,5 @@ public class AboutCanadaViewModel extends ViewModel {
         return repository.getLoadingData();
 
     }
-
 
 }

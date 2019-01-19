@@ -124,4 +124,46 @@ public class AboutCanadaRepository {
         return infoListLive;
 
     }
+
+    public void getUpdatedInfoData() {
+
+        final LiveData<List<InfoEntity>> infoList = databaseManager.getInfoDao().getInfoList();
+
+        //check for internet connectivity
+        if (!NetworkUtils.isNetworkAvailable(context)) {
+            loadingData.setValue(View.GONE);
+            errorData.setValue(context.getResources().getString(R.string.no_internet_found));
+        }
+
+        //get data from server
+        apiService.getInfo().subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread()).subscribeWith(new DisposableObserver<CanadaInfo>() {
+            @Override
+            public void onNext(CanadaInfo value) {
+
+                //insert value of title in pref
+                editor.putString(ConstantUtils.TITLE, value.getTitle()).apply();
+
+                //delete old data
+                databaseManager.getInfoDao().clearInfoList();
+
+                //insert list data in db
+                databaseManager.getInfoDao().insertInfoList(value.getRows());
+
+                infoListLive.removeSource(infoList);
+                infoListLive.setValue(value.getRows());
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                errorData.setValue(context.getResources().getString(R.string.error_occurred));
+            }
+
+            @Override
+            public void onComplete() {
+
+            }
+        });
+    }
 }
