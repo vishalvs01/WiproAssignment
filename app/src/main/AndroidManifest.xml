@@ -6,7 +6,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
-        android:name=".application.App"
+        android:name=".common.db.dao.App"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -14,9 +14,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <activity
-            android:name=".aboutcanada.mvp.AboutCanadaActivity"
-            android:screenOrientation="portrait">
+        <activity android:name=".aboutcanada.ui.AboutCanadaActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

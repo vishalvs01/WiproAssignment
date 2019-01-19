@@ -7,7 +7,7 @@
 
         <variable
             name="info"
-            type="com.wiproassignment.aboutcanada.data.Info" />
+            type="com.wiproassignment.common.db.entity.InfoEntity" />
 
     </data>
 

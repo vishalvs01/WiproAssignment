@@ -62,6 +62,13 @@ dependencies {
     //Library with dp defined for multiple size phone
     implementation "com.intuit.sdp:sdp-android:$sdpVersion"
 
+    //Library for viewmodel and livedata
+    implementation "android.arch.lifecycle:extensions:$lifecycleVersion"
+
+    //Library for room db
+    implementation "android.arch.persistence.room:runtime:$roomVersion"
+    annotationProcessor "android.arch.persistence.room:compiler:$roomVersion"
+
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'

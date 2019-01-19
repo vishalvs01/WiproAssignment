@@ -3,6 +3,7 @@ package com.wiproassignment.common.di;
 import android.app.Application;
 
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
+import com.wiproassignment.common.ApiService;
 
 import javax.inject.Singleton;
 
@@ -49,6 +50,12 @@ public class NetworkModule {
                 addConverterFactory(converter).
                 addCallAdapterFactory(rxAdapter).
                 build();
+    }
+
+    @Singleton
+    @Provides
+    public ApiService provideApiService(Retrofit retrofit) {
+        return retrofit.create(ApiService.class);
     }
 
 }

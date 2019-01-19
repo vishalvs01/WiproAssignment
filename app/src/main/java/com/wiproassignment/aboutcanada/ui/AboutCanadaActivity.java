@@ -1,5 +1,8 @@
-package com.wiproassignment.aboutcanada.mvp;
+package com.wiproassignment.aboutcanada.ui;
 
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
+import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -7,50 +10,94 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
 import android.widget.Toast;
 
 import com.wiproassignment.R;
 import com.wiproassignment.aboutcanada.adapter.AboutCanadaAdapter;
-import com.wiproassignment.aboutcanada.contract.AboutCanadaViewPresenterContract;
-import com.wiproassignment.aboutcanada.data.Info;
-import com.wiproassignment.aboutcanada.di.AboutCanadaModule;
 import com.wiproassignment.aboutcanada.di.DaggerAboutCanadaComponent;
-import com.wiproassignment.application.App;
+import com.wiproassignment.common.db.dao.App;
+import com.wiproassignment.common.ViewModelFactory;
+import com.wiproassignment.common.db.entity.InfoEntity;
 import com.wiproassignment.databinding.ActivityAboutCanadaBinding;
+import com.wiproassignment.utils.ConstantUtils;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 
-public class AboutCanadaActivity extends AppCompatActivity implements AboutCanadaViewPresenterContract.View {
+public class AboutCanadaActivity extends AppCompatActivity {
 
     @Inject
-    AboutCanadaViewPresenterContract.Presenter presenter;
+    ViewModelFactory factory;
+
+    @Inject
+    SharedPreferences sharedPreferences;
 
     private ActivityAboutCanadaBinding binding;
     private AboutCanadaAdapter adapter;
+    private AboutCanadaViewModel viewModel;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setUpMvp();
+
+        setUpDi();
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_about_canada);
 
         setupToolbar();
         setUpRecyclerView();
 
-        presenter.loadData();
+        viewModel = ViewModelProviders.of(this, factory).get(AboutCanadaViewModel.class);
+
+        observeData();
 
     }
 
-    public void setUpMvp() {
-        DaggerAboutCanadaComponent.builder().applicationComponent(App.getApplicationComponent())
-                .aboutCanadaModule(new AboutCanadaModule(this)).build().inject(this);
+    private void observeData() {
 
+        viewModel.getInfoList().observe(this, new Observer<List<InfoEntity>>() {
+            @Override
+            public void onChanged(@Nullable List<InfoEntity> infoEntities) {
+                setListData(infoEntities);
+                setToolBarTitle(sharedPreferences.getString(ConstantUtils.TITLE, ""));
+            }
+        });
+
+
+        viewModel.getErrorMessage().observe(this, new Observer<String>() {
+            @Override
+            public void onChanged(@Nullable String error) {
+                showError(error);
+            }
+        });
+
+        viewModel.getLoadingState().observe(this, new Observer<Integer>() {
+            @Override
+            public void onChanged(@Nullable Integer sate) {
+                binding.tvLoadingData.setVisibility(sate);
+            }
+        });
+
+
+    }
+
+    public void showError(String error) {
+        Toast.makeText(this, error, Toast.LENGTH_SHORT).show();
+    }
+
+    public void setListData(List<InfoEntity> listData) {
+        adapter.addAll(listData);
+    }
+
+    public void setToolBarTitle(String title) {
+        if (title != null)
+            getSupportActionBar().setTitle(title);
+    }
+
+
+    public void setUpDi() {
+        DaggerAboutCanadaComponent.builder().applicationComponent(App.getApplicationComponent()).build().inject(this);
     }
 
     public void setupToolbar() {
@@ -69,16 +116,7 @@ public class AboutCanadaActivity extends AppCompatActivity implements AboutCanad
 
     }
 
-    @Override
-    public void setToolBarTitle(String title) {
-        if (title != null)
-            getSupportActionBar().setTitle(title);
-    }
-
-    @Override
-    public void setListData(ArrayList<Info> listData) {
-        adapter.addAll(listData);
-    }
+  /*  @Override
 
     @Override
     public void showError() {
@@ -98,32 +136,5 @@ public class AboutCanadaActivity extends AppCompatActivity implements AboutCanad
     @Override
     public void stopLoading() {
         binding.tvLoadingData.setVisibility(View.GONE);
-    }
-
-    @Override
-    protected void onStop() {
-        presenter.clearCompositeDisposable();
-        super.onStop();
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-
-        switch (item.getItemId()) {
-            case R.id.view_reload:
-
-                presenter.reloadData();
-                return true;
-
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-
-    }
+    }*/
 }
