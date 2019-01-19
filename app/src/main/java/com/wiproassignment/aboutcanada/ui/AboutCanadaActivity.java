@@ -17,7 +17,7 @@ import com.wiproassignment.R;
 import com.wiproassignment.aboutcanada.adapter.AboutCanadaAdapter;
 import com.wiproassignment.aboutcanada.di.DaggerAboutCanadaComponent;
 import com.wiproassignment.common.ViewModelFactory;
-import com.wiproassignment.common.db.dao.App;
+import com.wiproassignment.application.App;
 import com.wiproassignment.common.db.entity.InfoEntity;
 import com.wiproassignment.databinding.ActivityAboutCanadaBinding;
 import com.wiproassignment.utils.ConstantUtils;

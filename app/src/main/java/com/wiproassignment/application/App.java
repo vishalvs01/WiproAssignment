@@ -1,4 +1,4 @@
-package com.wiproassignment.common.db.dao;
+package com.wiproassignment.application;
 
 import android.app.Application;
 
