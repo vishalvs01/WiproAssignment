@@ -7,6 +7,6 @@ Web Api library used- Retrofit
 
 DB library used- ROOM
 
-Other notable library used- RXjava, LiveData, Picasso, SDP
+Other notable library used- RXjava, ViewModel, LiveData, Picasso  and SDP
 
 and used databinding to bind data to UI elements
