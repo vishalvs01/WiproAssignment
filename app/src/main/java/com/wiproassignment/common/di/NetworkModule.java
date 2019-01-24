@@ -4,6 +4,9 @@ import android.app.Application;
 
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import com.wiproassignment.common.ApiService;
+import com.wiproassignment.common.schedulerprovider.BaseSchedulerProvider;
+import com.wiproassignment.common.schedulerprovider.SchedulerProvider;
+import com.wiproassignment.utils.NetworkUtil;
 
 import javax.inject.Singleton;
 
@@ -24,9 +27,15 @@ public class NetworkModule {
 
     @Provides
     @Singleton
-    public OkHttpClient provideOkHttpClient(Application context) {
+    public OkHttpClient provideOkHttpClient() {
         OkHttpClient.Builder client = new OkHttpClient.Builder();
         return client.build();
+    }
+
+    @Provides
+    @Singleton
+    public NetworkUtil provideNetworkUtil(Application context) {
+        return new NetworkUtil(context);
     }
 
     @Singleton
@@ -57,5 +66,12 @@ public class NetworkModule {
     public ApiService provideApiService(Retrofit retrofit) {
         return retrofit.create(ApiService.class);
     }
+
+    @Singleton
+    @Provides
+    public BaseSchedulerProvider provideSchedulerProvider() {
+        return new SchedulerProvider();
+    }
+
 
 }

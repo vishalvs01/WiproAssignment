@@ -1,10 +1,11 @@
 package com.wiproassignment.common.di;
 
 import android.app.Application;
-import android.content.SharedPreferences;
 
 import com.wiproassignment.common.ApiService;
 import com.wiproassignment.common.db.DatabaseManager;
+import com.wiproassignment.common.schedulerprovider.BaseSchedulerProvider;
+import com.wiproassignment.utils.NetworkUtil;
 
 import javax.inject.Singleton;
 
@@ -18,11 +19,13 @@ public interface ApplicationComponent {
 
     ApiService getRetrofit();
 
+    NetworkUtil getNetworkUtil();
+
     DatabaseManager getDatabaseManager();
 
-    SharedPreferences getSharedPref();
+    SharedPrefHelper getPrefHelper();
 
-    SharedPreferences.Editor getPrefEditor();
+    BaseSchedulerProvider getSchedulerProvider();
 
 }
 

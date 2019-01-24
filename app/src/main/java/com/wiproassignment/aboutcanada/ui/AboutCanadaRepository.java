@@ -5,7 +5,6 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MediatorLiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.Observer;
-import android.content.SharedPreferences;
 import android.support.annotation.Nullable;
 import android.view.View;
 
@@ -14,45 +13,51 @@ import com.wiproassignment.aboutcanada.data.CanadaInfo;
 import com.wiproassignment.common.ApiService;
 import com.wiproassignment.common.db.DatabaseManager;
 import com.wiproassignment.common.db.entity.InfoEntity;
+import com.wiproassignment.common.di.SharedPrefHelper;
+import com.wiproassignment.common.schedulerprovider.BaseSchedulerProvider;
 import com.wiproassignment.utils.ConstantUtils;
-import com.wiproassignment.utils.NetworkUtils;
+import com.wiproassignment.utils.NetworkUtil;
 
 import java.util.List;
 
 import javax.inject.Inject;
 
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableObserver;
-import io.reactivex.schedulers.Schedulers;
 
 public class AboutCanadaRepository {
 
     private ApiService apiService;
     private DatabaseManager databaseManager;
     private MediatorLiveData<List<InfoEntity>> infoListLive = new MediatorLiveData<>();
-    private SharedPreferences.Editor editor;
+    private SharedPrefHelper sharedPrefHelper;
     private Application context;
     private MutableLiveData<String> errorData;
     private MutableLiveData<Integer> loadingData;
+    private NetworkUtil networkUtil;
+    private BaseSchedulerProvider schedulerProvider;
 
     @Inject
-    public AboutCanadaRepository(Application context, ApiService apiService, DatabaseManager databaseManager, SharedPreferences.Editor editor) {
+    public AboutCanadaRepository(Application context, ApiService apiService,
+                                 DatabaseManager databaseManager, SharedPrefHelper sharedPrefHelper,
+                                 NetworkUtil networkUtil, BaseSchedulerProvider schedulerProvider) {
         this.context = context;
         this.apiService = apiService;
         this.databaseManager = databaseManager;
-        this.editor = editor;
+        this.sharedPrefHelper = sharedPrefHelper;
+        this.networkUtil = networkUtil;
+        this.schedulerProvider = schedulerProvider;
     }
 
     public LiveData<String> getErrorData() {
 
-        errorData = new MediatorLiveData<>();
+        errorData = new MutableLiveData<>();
         return errorData;
 
     }
 
     public LiveData<Integer> getLoadingData() {
 
-        loadingData = new MediatorLiveData<>();
+        loadingData = new MutableLiveData<>();
         return loadingData;
 
     }
@@ -71,15 +76,15 @@ public class AboutCanadaRepository {
                 if (infoEntities == null || infoEntities.isEmpty()) {
 
                     //check for internet connectivity
-                    if (!NetworkUtils.isNetworkAvailable(context)) {
+                    if (!networkUtil.isNetworkAvailable()) {
                         loadingData.setValue(View.GONE);
                         errorData.setValue(context.getResources().getString(R.string.no_internet_found));
                         return;
                     }
 
                     //get data from server
-                    apiService.getInfo().subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread()).subscribeWith(new DisposableObserver<CanadaInfo>() {
+                    apiService.getInfo().subscribeOn(schedulerProvider.io())
+                            .observeOn(schedulerProvider.mainThread()).subscribeWith(new DisposableObserver<CanadaInfo>() {
                         @Override
                         public void onNext(CanadaInfo value) {
 
@@ -87,12 +92,11 @@ public class AboutCanadaRepository {
                             loadingData.setValue(View.GONE);
 
                             //insert value of title in pref
-                            editor.putString(ConstantUtils.TITLE, value.getTitle()).apply();
+                            sharedPrefHelper.putString(ConstantUtils.TITLE, value.getTitle());
 
                             //insert list data in db
                             databaseManager.getInfoDao().insertInfoList(value.getRows());
 
-                            infoListLive.removeSource(infoList);
                             infoListLive.setValue(value.getRows());
 
                         }
@@ -114,7 +118,6 @@ public class AboutCanadaRepository {
                     //hide loader
                     loadingData.setValue(View.GONE);
 
-                    infoListLive.removeSource(infoList);
                     infoListLive.setValue(infoEntities);
                 }
 
@@ -127,22 +130,21 @@ public class AboutCanadaRepository {
 
     public void getUpdatedInfoData() {
 
-        final LiveData<List<InfoEntity>> infoList = databaseManager.getInfoDao().getInfoList();
-
         //check for internet connectivity
-        if (!NetworkUtils.isNetworkAvailable(context)) {
+        if (!networkUtil.isNetworkAvailable()) {
             loadingData.setValue(View.GONE);
             errorData.setValue(context.getResources().getString(R.string.no_internet_found));
+            return;
         }
 
         //get data from server
-        apiService.getInfo().subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread()).subscribeWith(new DisposableObserver<CanadaInfo>() {
+        apiService.getInfo().subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.mainThread()).subscribeWith(new DisposableObserver<CanadaInfo>() {
             @Override
             public void onNext(CanadaInfo value) {
 
                 //insert value of title in pref
-                editor.putString(ConstantUtils.TITLE, value.getTitle()).apply();
+                sharedPrefHelper.putString(ConstantUtils.TITLE, value.getTitle());
 
                 //delete old data
                 databaseManager.getInfoDao().clearInfoList();
@@ -150,8 +152,6 @@ public class AboutCanadaRepository {
                 //insert list data in db
                 databaseManager.getInfoDao().insertInfoList(value.getRows());
 
-                infoListLive.removeSource(infoList);
-                infoListLive.setValue(value.getRows());
 
             }
 

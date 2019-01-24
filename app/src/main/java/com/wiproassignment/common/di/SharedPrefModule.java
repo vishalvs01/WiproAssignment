@@ -26,4 +26,11 @@ public class SharedPrefModule {
         return sharedPreferences.edit();
     }
 
+
+    @Singleton
+    @Provides
+    public SharedPrefHelper provideSharedPrefHelper(SharedPreferences sharedPreferences, SharedPreferences.Editor editor) {
+        return new SharedPrefHelper(sharedPreferences, editor);
+    }
+
 }

@@ -2,7 +2,6 @@ package com.wiproassignment.aboutcanada.ui;
 
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -16,9 +15,10 @@ import android.widget.Toast;
 import com.wiproassignment.R;
 import com.wiproassignment.aboutcanada.adapter.AboutCanadaAdapter;
 import com.wiproassignment.aboutcanada.di.DaggerAboutCanadaComponent;
-import com.wiproassignment.common.ViewModelFactory;
 import com.wiproassignment.application.App;
+import com.wiproassignment.common.ViewModelFactory;
 import com.wiproassignment.common.db.entity.InfoEntity;
+import com.wiproassignment.common.di.SharedPrefHelper;
 import com.wiproassignment.databinding.ActivityAboutCanadaBinding;
 import com.wiproassignment.utils.ConstantUtils;
 
@@ -32,7 +32,7 @@ public class AboutCanadaActivity extends AppCompatActivity {
     ViewModelFactory factory;
 
     @Inject
-    SharedPreferences sharedPreferences;
+    SharedPrefHelper sharedPrefHelper;
 
     private ActivityAboutCanadaBinding binding;
     private AboutCanadaAdapter adapter;
@@ -81,7 +81,7 @@ public class AboutCanadaActivity extends AppCompatActivity {
             public void onChanged(@Nullable List<InfoEntity> infoEntities) {
                 binding.srLayout.setRefreshing(false);
                 setListData(infoEntities);
-                setToolBarTitle(sharedPreferences.getString(ConstantUtils.TITLE, ""));
+                setToolBarTitle(sharedPrefHelper.getString(ConstantUtils.TITLE, ""));
             }
         });
 

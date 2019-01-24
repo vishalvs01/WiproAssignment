@@ -34,6 +34,7 @@ ext {
     retrofitRxAdapter = '1.0.0'
     lifecycleVersion = '1.1.1'
     roomVersion = '1.1.1'
+    mockitoVersion = '2.13.0'
 }
 
 task clean(type: Delete) {
