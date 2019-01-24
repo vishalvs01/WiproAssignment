@@ -22,6 +22,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import io.reactivex.disposables.Disposable;
 import io.reactivex.observers.DisposableObserver;
 
 public class AboutCanadaRepository {
@@ -46,18 +47,20 @@ public class AboutCanadaRepository {
         this.sharedPrefHelper = sharedPrefHelper;
         this.networkUtil = networkUtil;
         this.schedulerProvider = schedulerProvider;
+
+        //initialize MutableLiveData variables
+        loadingData = new MutableLiveData<>();
+        errorData = new MutableLiveData<>();
     }
 
     public LiveData<String> getErrorData() {
 
-        errorData = new MutableLiveData<>();
         return errorData;
 
     }
 
     public LiveData<Integer> getLoadingData() {
 
-        loadingData = new MutableLiveData<>();
         return loadingData;
 
     }
@@ -139,10 +142,14 @@ public class AboutCanadaRepository {
 
         //get data from server
         apiService.getInfo().subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.mainThread()).subscribeWith(new DisposableObserver<CanadaInfo>() {
+                .observeOn(schedulerProvider.mainThread()).subscribe(new io.reactivex.Observer<CanadaInfo>() {
+            @Override
+            public void onSubscribe(Disposable d) {
+
+            }
+
             @Override
             public void onNext(CanadaInfo value) {
-
                 //insert value of title in pref
                 sharedPrefHelper.putString(ConstantUtils.TITLE, value.getTitle());
 
@@ -151,7 +158,6 @@ public class AboutCanadaRepository {
 
                 //insert list data in db
                 databaseManager.getInfoDao().insertInfoList(value.getRows());
-
 
             }
 

@@ -3,6 +3,7 @@ package com.wiproassignment;
 import android.app.Application;
 import android.arch.core.executor.testing.InstantTaskExecutorRule;
 import android.arch.lifecycle.MutableLiveData;
+import android.content.res.Resources;
 
 import com.wiproassignment.aboutcanada.data.CanadaInfo;
 import com.wiproassignment.aboutcanada.ui.AboutCanadaRepository;
@@ -18,7 +19,6 @@ import com.wiproassignment.utils.NetworkUtil;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -30,7 +30,7 @@ import io.reactivex.Observable;
 public class AboutCanadaRepositoryTest {
 
     @Rule
-    public TestRule rule = new InstantTaskExecutorRule();
+    public InstantTaskExecutorRule rule = new InstantTaskExecutorRule();
 
     @Mock
     private DatabaseManager databaseManager;
@@ -40,7 +40,6 @@ public class AboutCanadaRepositoryTest {
     private Application context;
     @Mock
     private SharedPrefHelper sharedPrefHelper;
-
     @Mock
     private NetworkUtil networkUtil;
 
@@ -79,13 +78,33 @@ public class AboutCanadaRepositoryTest {
 
     }
 
-    //not working properly
     @Test
     public void getErrorInfoData() {
 
         Mockito.doReturn(true).when(networkUtil).isNetworkAvailable();
 
         Mockito.doReturn(Observable.error(new Exception())).when(apiService).getInfo();
+
+        Resources resources = Mockito.mock(Resources.class);
+
+        Mockito.doReturn(resources).when(context).getResources();
+
+        Mockito.doReturn("error").when(resources).getString(R.string.error_occurred);
+
+        repository.getUpdatedInfoData();
+    }
+
+    @Test
+    public void getInternetError() {
+
+        Mockito.doReturn(false).when(networkUtil).isNetworkAvailable();
+
+        Resources resources = Mockito.mock(Resources.class);
+
+        Mockito.doReturn(resources).when(context).getResources();
+
+        Mockito.doReturn("no internet error").when(resources).getString(R.string.error_occurred);
+
 
         repository.getUpdatedInfoData();
 
